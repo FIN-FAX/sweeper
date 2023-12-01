@@ -1,3 +1,4 @@
 Flask==2.0.3
 pika==1.2.1
 requests
+werkzeug==2.2.2
