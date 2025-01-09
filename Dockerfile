@@ -22,7 +22,8 @@ RUN pyarmor-7 obfuscate src/app.py
 RUN ls -al /usr/src/app/dist/
 
 # Start a new stage from a slim version to keep the final image clean and small
-FROM python:3.9.5-slim-buster
+# FROM python:3.9.5-slim-buster
+FROM python:3.9.20-slim-bookworm
 
 RUN apt-get update -y && apt-get upgrade -y
 WORKDIR /usr/src/app
