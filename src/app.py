@@ -6,9 +6,15 @@ import os
 import json
 import time
 import requests
+import archive
+import boto3
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
+
+TIMEZONE = "America/Chicago"
 
 def deletefiles(directory):
     threshold = datetime.datetime.now() - datetime.timedelta(days=90)##hours=0, minutes=10
@@ -49,14 +55,41 @@ def deleteoldfiles():
         print(e)
     return
     
+# while True:
+#     try:
+#         print('Going to clean ....', flush = True)
+#         archive.cleanoldfiles(app)
+#         print('Going to sleep for 1 day ....', flush = True)
+#     except Exception as e:
+#         print("Error: Something wrong when deleting old faxes ...",e, flush = True)
+#     time.sleep(24*60*60)
 
-while True:
-    try:
-        payload = {"days":80}
-        resp = requests.post('http://faxdb-finfax-'+app.config['ENVIRONMENT']+':8012/deleteoldfaxes', json=payload)
-        print(resp)
-        deleteoldfiles()
-    except:
-        print("Error: Something wrong when deleting old faxes ...")
-    time.sleep(24*60*60)
-    # time.sleep(60)
+# scheduler = BlockingScheduler(timezone=TIMEZONE)
+scheduler = BackgroundScheduler(timezone=TIMEZONE)
+print('adding jobs ...', flush=True)
+scheduler.add_job(
+        archive.cleanoldfiles,
+        trigger="cron",
+        hour="1",
+        minute="0",
+        args=[app]
+    )
+print('job 1 added ...', flush=True)
+# scheduler.add_job(
+#         archive.dump_and_purge_corrected_collection,
+#         trigger="cron",
+#         day="1",
+#         hour="1",
+#         minute="0",
+#         args=[app]
+#     )
+# print('job 2 added ...', flush=True)
+print("Scheduler started. Ctrl+C to exit.", flush=True)
+scheduler.start()
+
+try:
+    while True:
+        print('sleepig ...',flush = True)
+        time.sleep(60*60*3)
+except (KeyboardInterrupt, SystemExit):
+    scheduler.shutdown()

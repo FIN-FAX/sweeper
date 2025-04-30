@@ -42,7 +42,7 @@ COPY ./entrypoint.sh ./entrypoint.sh
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
 
-
+# RUN mkdir /usr/src/archive
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
