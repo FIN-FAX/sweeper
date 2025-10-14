@@ -75,21 +75,21 @@ scheduler.add_job(
         args=[app]
     )
 print('job 1 added ...', flush=True)
-# scheduler.add_job(
-#         archive.dump_and_purge_corrected_collection,
-#         trigger="cron",
-#         day="1",
-#         hour="1",
-#         minute="0",
-#         args=[app]
-#     )
-# print('job 2 added ...', flush=True)
+scheduler.add_job(
+        archive.dump_and_purge_corrected_collection,
+        trigger="cron",
+        day="2",
+        hour="2",
+        minute="30",
+        args=[app]
+    )
+print('job 2 added ...', flush=True)
 print("Scheduler started. Ctrl+C to exit.", flush=True)
 scheduler.start()
 
 try:
     while True:
-        print('sleepig ...',flush = True)
+        print('sleeping ...',flush = True)
         time.sleep(60*60*3)
 except (KeyboardInterrupt, SystemExit):
     scheduler.shutdown()
